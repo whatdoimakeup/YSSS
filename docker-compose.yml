@@ -1,0 +1,10 @@
+services:
+  ysss:
+    restart: always
+    build: .
+    volumes:
+      - ./counters.json:/app/counters.json
+    environment:
+      - DB_PATH=/app/counters.json
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+    command: uv run src/главный.py
