@@ -15,7 +15,7 @@ def запуск():
 
     робот = Application.builder().token(ключ).build()
     регистратор_команд(робот)
-
+    print("Версия 1.0")
     print("Бот запущен и ждет пока кто то скажет что то странное...")
     робот.run_polling(allowed_updates=Update.ALL_TYPES)
 
