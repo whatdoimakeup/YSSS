@@ -35,7 +35,7 @@ async def отменить_счетчик(update: Update, context: ContextTypes.
 
     # Получаем bucket из callback_data
     bucket = query.data.replace("cancel_", "")
-    chat_id = query.from_user.id
+    chat_id = update.effective_chat.id
 
     # Уменьшаем счетчик на 1
     new_value = хранилище.уменьшить_счетчик(chat_id, bucket)
