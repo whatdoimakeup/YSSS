@@ -13,7 +13,7 @@ from хранилка import хранилище
     "meet_longger_than_two_hours": "Мит более 2 часов",
     "danil_chudin": "Даня Чудин",
     "denis_are_you_with_us": "Денис, ты с нами?",
-    "danya_are_you_with_us": "Даня, ты с нами?",
+    "danchistyakov_are_you_with_us": "Даня, ты с нами?",
     "danya_gorev_is_late": "Даня Горев, видимо, опаздывает",
     "managers_keep_coming": "В меня постоянно ходят менеджеры",
     "let_me_tell_about_myself": "Расскажу пару слов о себе",
