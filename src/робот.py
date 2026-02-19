@@ -10,7 +10,7 @@ from хранилка import хранилище
     "i_dont_understand_you": "Я тебя не понимаю",
     "same_but_slower": "То же самое, но медленнее",
     "not_answering_a_question": "Ты не отвечаешь на вопрос",
-    "meet_longger_than_two_hours": "Мит более 2 часов",
+    "meet_longer_than_two_hours": "Мит более 2 часов",
     "danil_chudin": "Даня Чудин",
     "denis_are_you_with_us": "Денис, ты с нами?",
     "danchistyakov_are_you_with_us": "Даня, ты с нами?",
