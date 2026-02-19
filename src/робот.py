@@ -12,6 +12,14 @@ from хранилка import хранилище
     "not_answering_a_question": "Ты не отвечаешь на вопрос",
     "meet_longger_than_two_hours": "Мит более 2 часов",
     "danil_chudin": "Даня Чудин",
+    "denis_are_you_with_us": "Денис, ты с нами?",
+    "danya_gorev_is_late": "Даня Горев видимо опаздывает",
+    "wont_merge_this_branch": "Я не волью эту ветку. Рисков больше чем ценности",
+    "managers_keep_coming": "В меня постоянно ходят менеджеры",
+    "let_me_tell_about_myself": "Расскажу пару слов о себе",
+    "dont_forget_weekend": "Не забудьте уйти на выходные",
+    "meeting_start_at_11": "Старт встречи в 11:00",
+    "meeting_start_at_1115": "Старт встречи в 11:15",
 }
 
 
