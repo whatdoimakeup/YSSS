@@ -1,5 +1,5 @@
 import random
-
+from datetime import datetime
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, ContextTypes, CallbackQueryHandler
 from хранилка import хранилище
@@ -71,12 +71,16 @@ async def бинго(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     проекты = ["AllCups", "Study", "GTP"]
     random.shuffle(проекты)
+    рандомное_число = random.randint(0, 100)
+    сегодня_пятница = datetime.now().weekday() == 4
 
     сообщение = (
         f"Всем привет, коллеги!\n"
         f"Сегодня старт встречи в {время}. "
         f"Обсудим {проекты[0]}, затем {проекты[1]} и в конце {проекты[2]}"
     )
+    if сегодня_пятница and рандомное_число > 80:
+        сообщение += "\nВозьмите свой любимый напиток!"
 
     await update.message.reply_text(сообщение)
 
