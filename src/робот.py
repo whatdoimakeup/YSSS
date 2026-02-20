@@ -12,9 +12,22 @@ from хранилка import хранилище
     "i_dont_understand_you": "Я тебя не понимаю",
     "same_but_slower": "То же самое, но медленнее",
     "not_answering_a_question": "Ты не отвечаешь на вопрос",
-    "meet_longger_than_two_hours": "Мит более 2 часов",
+    "meet_longer_than_two_hours": "Мит более 2 часов",
     "danil_chudin": "Даня Чудин",
     "bingo": "Зов на дейли",
+    "denis_are_you_with_us": "Денис, ты с нами?",
+    "danchistyakov_are_you_with_us": "Даня, ты с нами?",
+    "danya_gorev_is_late": "Даня Горев, видимо, опаздывает",
+    "managers_keep_coming": "В меня постоянно ходят менеджеры",
+    "let_me_tell_about_myself": "Расскажу пару слов о себе",
+    "dont_forget_weekend": "Не забудьте уйти на выходные",
+    "meeting_start_at_11": "Старт встречи в 11:00",
+    "meeting_start_at_1115": "Старт встречи в 11:15",
+    "govnokod": "Говнoкод",
+    "magic": "Магия",
+    "take_your_fav_drink": "Возьмите свой любимый напиток",
+    "clear_value": "Понятная ценность",
+    "story_from_technopark": "Вот историю одну из своего опыта расскажу, ещё из Технопарка",
 }
 
 
