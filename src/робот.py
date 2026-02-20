@@ -14,7 +14,7 @@ from хранилка import хранилище
     "not_answering_a_question": "Ты не отвечаешь на вопрос",
     "meet_longger_than_two_hours": "Мит более 2 часов",
     "danil_chudin": "Даня Чудин",
-    "bingo": "Давай сыграем в игру",
+    "bingo": "Зов на дейли",
 }
 
 
@@ -98,3 +98,4 @@ def регистратор_команд(робот: Application):
     робот.add_handler(CallbackQueryHandler(отменить_счетчик, pattern="^cancel_"))
     робот.add_handler(CommandHandler("stat", статистика))
     робот.add_handler(CommandHandler("commands", счетчики))
+    робот.add_handler(CommandHandler("bingo", бинго))
