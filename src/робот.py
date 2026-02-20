@@ -1,3 +1,5 @@
+import random
+from datetime import datetime
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, ContextTypes, CallbackQueryHandler
 from хранилка import хранилище
@@ -12,6 +14,7 @@ from хранилка import хранилище
     "not_answering_a_question": "Ты не отвечаешь на вопрос",
     "meet_longer_than_two_hours": "Мит более 2 часов",
     "danil_chudin": "Даня Чудин",
+    "bingo": "Зов на дейли",
     "denis_are_you_with_us": "Денис, ты с нами?",
     "danchistyakov_are_you_with_us": "Даня, ты с нами?",
     "danya_gorev_is_late": "Даня Горев, видимо, опаздывает",
@@ -75,6 +78,29 @@ async def счетчики(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(f"📊 Все счетчики:\n{счетчики_текста}")
 
 
+async def бинго(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Команда для генерации сообщения о встрече"""
+    время = random.choice(["11:00", "11:05", "11:10"])
+
+    проекты = ["AllCups", "Study", "GTP"]
+    random.shuffle(проекты)
+    рандомное_число_для_напитка = random.randint(0, 100)
+    рандомное_число_для_задач = random.randint(0, 100)
+    сегодня_пятница = datetime.now().weekday() == 4
+
+    сообщение = (
+        f"Всем привет, коллеги!\n"
+        f"Сегодня старт встречи в {время}. "
+        f"Обсудим {проекты[0]}, затем {проекты[1]} и в конце {проекты[2]}"
+    )
+    if сегодня_пятница and рандомное_число_для_задач > 50:
+        сообщение += "\nПосмотрите задачи, которые можно закрыть"
+    if сегодня_пятница and рандомное_число_для_напитка > 80:
+        сообщение += "\nВозьмите свой любимый напиток!"
+
+    await update.message.reply_text(сообщение)
+
+
 def регистратор_команд(робот: Application):
     """ЫЫЫЫЫЫЫЫЫЫЫЫЫЫ"""
     for bucket in КОМАНДЫ.keys():
@@ -85,3 +111,4 @@ def регистратор_команд(робот: Application):
     робот.add_handler(CallbackQueryHandler(отменить_счетчик, pattern="^cancel_"))
     робот.add_handler(CommandHandler("stat", статистика))
     робот.add_handler(CommandHandler("commands", счетчики))
+    робот.add_handler(CommandHandler("bingo", бинго))
