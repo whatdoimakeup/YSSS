@@ -71,7 +71,8 @@ async def бинго(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     проекты = ["AllCups", "Study", "GTP"]
     random.shuffle(проекты)
-    рандомное_число = random.randint(0, 100)
+    рандомное_число_для_напитка = random.randint(0, 100)
+    рандомное_число_для_задач = random.randint(0, 100)
     сегодня_пятница = datetime.now().weekday() == 4
 
     сообщение = (
@@ -79,7 +80,9 @@ async def бинго(update: Update, context: ContextTypes.DEFAULT_TYPE):
         f"Сегодня старт встречи в {время}. "
         f"Обсудим {проекты[0]}, затем {проекты[1]} и в конце {проекты[2]}"
     )
-    if сегодня_пятница and рандомное_число > 80:
+    if сегодня_пятница and рандомное_число_для_задач > 50:
+        сообщение += "\nПосмотрите задачи, которые можно закрыть"
+    if сегодня_пятница and рандомное_число_для_напитка > 80:
         сообщение += "\nВозьмите свой любимый напиток!"
 
     await update.message.reply_text(сообщение)
