@@ -1,3 +1,5 @@
+import random
+
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, ContextTypes, CallbackQueryHandler
 from хранилка import хранилище
@@ -12,6 +14,7 @@ from хранилка import хранилище
     "not_answering_a_question": "Ты не отвечаешь на вопрос",
     "meet_longger_than_two_hours": "Мит более 2 часов",
     "danil_chudin": "Даня Чудин",
+    "bingo": "Давай сыграем в игру",
 }
 
 
@@ -60,6 +63,22 @@ async def счетчики(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Показать все счетчики"""
     счетчики_текста = "\n".join([f"/{k}: {v}" for k, v in КОМАНДЫ.items()])
     await update.message.reply_text(f"📊 Все счетчики:\n{счетчики_текста}")
+
+
+async def бинго(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Команда для генерации сообщения о встрече"""
+    время = random.choice(["11:00", "11:05", "11:10"])
+
+    проекты = ["AllCups", "Study", "GTP"]
+    random.shuffle(проекты)
+
+    сообщение = (
+        f"Всем привет, коллеги!\n"
+        f"Сегодня старт встречи в {время}. "
+        f"Обсудим {проекты[0]}, затем {проекты[1]} и в конце {проекты[2]}"
+    )
+
+    await update.message.reply_text(сообщение)
 
 
 def регистратор_команд(робот: Application):
