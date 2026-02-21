@@ -11,5 +11,7 @@ RUN uv sync --frozen --no-dev
 
 COPY src ./src
 
+COPY главный.py ./главный.py
+
 CMD ["uv", "run", "src/главный.py"]
 

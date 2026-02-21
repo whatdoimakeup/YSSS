@@ -2,7 +2,7 @@ import random
 from datetime import datetime
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, ContextTypes, CallbackQueryHandler
-from хранилка import хранилище
+from src.хранилка import хранилище
 
 КОМАНДЫ = {
     "you_say_something_strange": "Ты говоришь что то странное",
@@ -34,14 +34,13 @@ from хранилка import хранилище
 async def счетчик(update: Update, context: ContextTypes.DEFAULT_TYPE, bucket: str):
     """Команда для увеличения счетчика"""
     chat_id = update.effective_chat.id
-    new_value = хранилище.увеличить_счетчик(chat_id, bucket)
+    новый_счетчик = await хранилище.добавить_счетчик(chat_id, bucket)
+    новое_значение = await хранилище.получить_счетчик(chat_id, bucket)
 
-    keyboard = [[InlineKeyboardButton("Отминет", callback_data=f"cancel_{bucket}")]]
+    keyboard = [[InlineKeyboardButton("Отминет", callback_data=f"cancel_{новый_счетчик.id}")]]
     reply_markup = InlineKeyboardMarkup(keyboard)
 
-    await update.message.reply_text(
-        f"✅ Записали ✍️: {КОМАНДЫ[bucket]}: {new_value}", reply_markup=reply_markup
-    )
+    await update.message.reply_text(f"✅ Записали ✍️: {КОМАНДЫ[bucket]}: {новое_значение}", reply_markup=reply_markup)
 
 
 async def отменить_счетчик(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -50,24 +49,21 @@ async def отменить_счетчик(update: Update, context: ContextTypes.
     await query.answer()
 
     # Получаем bucket из callback_data
-    bucket = query.data.replace("cancel_", "")
+    id_счетчика = query.data.replace("cancel_", "")
     chat_id = update.effective_chat.id
 
     # Уменьшаем счетчик на 1
-    new_value = хранилище.уменьшить_счетчик(chat_id, bucket)
+    await хранилище.уменьшить_счетчик(chat_id, id_счетчика)
 
-    await query.edit_message_text(text=f"❌ Отменено: {КОМАНДЫ[bucket]}: {new_value}")
+    await query.edit_message_text(text="❌ Отменено")
 
 
 async def статистика(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Команда /stat - показать стату"""
     chat_id = update.effective_chat.id
-    value = хранилище.получить_все_счетчики(chat_id)
+    value = await хранилище.получить_все_счетчики(chat_id)
     статистика_текста = "\n".join(
-        [
-            f"{КОМАНДЫ.get(k, 'WTF???')}: {v}"
-            for k, v in sorted(value.items(), key=lambda x: x[1], reverse=True)
-        ]
+        [f"{КОМАНДЫ.get(k, 'WTF???')}: {v}" for k, v in sorted(value.items(), key=lambda x: x[1], reverse=True)]
     )
     await update.message.reply_text(f"📊 Статистика:\n{статистика_текста}")
 
@@ -105,9 +101,7 @@ def регистратор_команд(робот: Application):
     """ЫЫЫЫЫЫЫЫЫЫЫЫЫЫ"""
     for bucket in КОМАНДЫ.keys():
         print(f"Регистрируем команду: {bucket}")
-        робот.add_handler(
-            CommandHandler(bucket, lambda u, c, b=bucket: счетчик(u, c, b))
-        )
+        робот.add_handler(CommandHandler(bucket, lambda u, c, b=bucket: счетчик(u, c, b)))
     робот.add_handler(CallbackQueryHandler(отменить_счетчик, pattern="^cancel_"))
     робот.add_handler(CommandHandler("stat", статистика))
     робот.add_handler(CommandHandler("commands", счетчики))
