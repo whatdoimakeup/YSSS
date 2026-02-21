@@ -14,7 +14,7 @@ from хранилка import хранилище
     "not_answering_a_question": "Ты не отвечаешь на вопрос",
     "meet_longer_than_two_hours": "Мит более 2 часов",
     "danil_chudin": "Даня Чудин",
-    "bingo": "Зов на дейли",
+    "call_bingo": "Зов на дейли",
     "denis_are_you_with_us": "Денис, ты с нами?",
     "danchistyakov_are_you_with_us": "Даня, ты с нами?",
     "danya_gorev_is_late": "Даня Горев, видимо, опаздывает",
