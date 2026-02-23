@@ -3,7 +3,7 @@ from tortoise.functions import Count
 
 from src.models import User, Счетчик
 
-URL_БАЗЫ_ДАННЫХ = os.getenv("DATABASE_URL", "postgres://postgres:admin@127.0.0.1:5432/ysss")
+URL_БАЗЫ_ДАННЫХ = os.getenv("DATABASE_URL", "postgres://ysss:admin@127.0.0.1:5432/ysss")
 
 TORTOISE_ORM = {
     "connections": {"default": URL_БАЗЫ_ДАННЫХ},
