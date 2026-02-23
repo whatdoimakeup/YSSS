@@ -2,7 +2,9 @@ import random
 from datetime import datetime
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, ContextTypes, CallbackQueryHandler
+from tortoise.functions import Count
 from src.хранилка import хранилище
+from src.models import User, Счетчик
 
 КОМАНДЫ = {
     "you_say_something_strange": "Ты говоришь что то странное",
@@ -34,13 +36,33 @@ from src.хранилка import хранилище
 async def счетчик(update: Update, context: ContextTypes.DEFAULT_TYPE, bucket: str):
     """Команда для увеличения счетчика"""
     chat_id = update.effective_chat.id
-    новый_счетчик = await хранилище.добавить_счетчик(chat_id, bucket)
+    author = await User.from_telegram_user(update.effective_user)
+
+    новый_счетчик = await хранилище.добавить_счетчик(chat_id, author, bucket)
     новое_значение = await хранилище.получить_счетчик(chat_id, bucket)
 
     keyboard = [[InlineKeyboardButton("Отминет", callback_data=f"cancel_{новый_счетчик.id}")]]
     reply_markup = InlineKeyboardMarkup(keyboard)
 
-    await update.message.reply_text(f"✅ Записали ✍️: {КОМАНДЫ[bucket]}: {новое_значение}", reply_markup=reply_markup)
+    await update.message.reply_text(
+        f"✅ Записали ✍️: {КОМАНДЫ[bucket]}: {новое_значение}\nСпасибо, {author.user_mention}!",
+        reply_markup=reply_markup,
+        parse_mode="HTML",
+    )
+
+
+async def contributors(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Показать всех контрибьюторов"""
+    chat_id = update.effective_chat.id
+    counters = (
+        await Счетчик.filter(chat_id=chat_id, is_active=True, author_id__not_isnull=True)
+        .annotate(total=Count("id"))
+        .order_by("-total")
+        .prefetch_related("author")
+    )
+
+    контрибьюторы = "\n".join([f"{counter.author.user_mention}: {counter.total}" for counter in counters])
+    await update.message.reply_text(f"👥 Контрибьюторы:\n{контрибьюторы}")
 
 
 async def отменить_счетчик(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -106,3 +128,4 @@ def регистратор_команд(робот: Application):
     робот.add_handler(CommandHandler("stat", статистика))
     робот.add_handler(CommandHandler("commands", счетчики))
     робот.add_handler(CommandHandler("bingo", бинго))
+    робот.add_handler(CommandHandler("contributors", contributors))

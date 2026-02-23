@@ -1,7 +1,7 @@
 import os
 from tortoise.functions import Count
 
-from src.models import Счетчик
+from src.models import User, Счетчик
 
 URL_БАЗЫ_ДАННЫХ = os.getenv("DATABASE_URL", "postgres://postgres:admin@127.0.0.1:5432/ysss")
 
@@ -38,13 +38,14 @@ class Хранилище:
         )
         return {строка["bucket"]: строка["total"] for строка in счетчики}
 
-    async def добавить_счетчик(self, chat_id: int, метрика: str) -> Счетчик:
+    async def добавить_счетчик(self, chat_id: int, author: User, метрика: str) -> Счетчик:
         """Повышаем"""
         print(f"Увеличиваем счетчик для чата {chat_id} и метрики {метрика}")
         новый_счетчик = await Счетчик.create(
             chat_id=chat_id,
             bucket=метрика,
             is_active=True,
+            author=author,
         )
         return новый_счетчик
 
