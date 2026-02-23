@@ -1,74 +1,67 @@
-import json
 import os
+from tortoise.functions import Count
 
-БАЗА_ДАННЫХ = os.getenv("DB_PATH", "counters.json")
+from src.models import User, Счетчик
+
+URL_БАЗЫ_ДАННЫХ = os.getenv("DATABASE_URL", "postgres://ysss:admin@127.0.0.1:5432/ysss")
+
+TORTOISE_ORM = {
+    "connections": {"default": URL_БАЗЫ_ДАННЫХ},
+    "apps": {
+        "src": {
+            "models": ["src.models"],
+            "default_connection": "default",
+            "migrations": "src.migrations",
+        }
+    },
+}
 
 
 class Хранилище:
-    """Простое хранилище для счетчиков на основе JSON"""
+    """Хранилище счетчиков на базе PostgreSQL через Tortoise ORM."""
 
-    def __init__(self, путь_к_файлу: str = БАЗА_ДАННЫХ):
-        self.путь_к_файлу = путь_к_файлу
-        self.Загрузить()
+    async def получить_счетчик(self, chat_id: int, bucket: str) -> int:
+        """Узнаем значение одного счетчика"""
+        return await Счетчик.filter(
+            chat_id=chat_id,
+            bucket=bucket,
+            is_active=True,
+        ).count()
 
-    def Загрузить(self):
-        """Сюда"""
-        if os.path.exists(self.путь_к_файлу):
-            with open(self.путь_к_файлу, "r", encoding="utf-8") as f:
-                self.данные = json.load(f)
-        else:
-            self.данные = {}
-
-    def сохранить(self):
-        """Туда"""
-        with open(self.путь_к_файлу, "w", encoding="utf-8") as f:
-            json.dump(self.данные, f, ensure_ascii=False, indent=2)
-
-    def получить_счетчик(self, chat_id: int, bucket: str) -> int:
-        """Узнаем"""
-        return self.данные.get(str(chat_id), {}).get(bucket, 0)
-
-    def получить_все_счетчики(self, chat_id: int) -> dict:
+    async def получить_все_счетчики(self, chat_id: int) -> dict[str, int]:
         """Узнаем все счетчики для чата"""
-        return self.данные.get(str(chat_id), {})
+        счетчики = (
+            await Счетчик.filter(chat_id=chat_id, is_active=True)
+            .group_by("bucket")
+            .annotate(total=Count("id"))
+            .values("bucket", "total")
+        )
+        return {строка["bucket"]: строка["total"] for строка in счетчики}
 
-    def увеличить_счетчик(self, chat_id: int, метрика: str) -> int:
-        print(f"Увеличиваем счетчик для чата {chat_id} и метрики {метрика}")
+    async def добавить_счетчик(self, chat_id: int, author: User, метрика: str) -> Счетчик:
         """Повышаем"""
-        айди_чата = str(chat_id)
-        if айди_чата not in self.данные:
-            self.данные[айди_чата] = {}
+        print(f"Увеличиваем счетчик для чата {chat_id} и метрики {метрика}")
+        новый_счетчик = await Счетчик.create(
+            chat_id=chat_id,
+            bucket=метрика,
+            is_active=True,
+            author=author,
+        )
+        return новый_счетчик
 
-        значение_метрики = self.данные[айди_чата].get(метрика, None)
-        if значение_метрики is None:
-            self.данные[айди_чата][метрика] = 0
-
-        self.данные[айди_чата][метрика] = self.данные[айди_чата].get(метрика, 0) + 1
-        self.сохранить()
-        return self.данные[айди_чата][метрика]
-
-    def уменьшить_счетчик(self, chat_id: int, метрика: str) -> int:
-        print(f"Уменьшаем счетчик для чата {chat_id} и метрики {метрика}")
+    async def уменьшить_счетчик(self, chat_id: int, id_метрики: int) -> int:
         """Понижаем"""
-        айди_чата = str(chat_id)
-        if айди_чата not in self.данные:
-            self.данные[айди_чата] = {}
+        print(f"Уменьшаем счетчик для чата {chat_id} и метрики {id_метрики}")
+        запись = await Счетчик.filter(
+            chat_id=chat_id,
+            id=id_метрики,
+            is_active=True,
+        ).first()
 
-        значение_метрики = self.данные[айди_чата].get(метрика, None)
-        if значение_метрики is None:
-            self.данные[айди_чата][метрика] = 0
-
-        # Не уменьшаем ниже 0
-        if self.данные[айди_чата].get(метрика, 0) > 0:
-            self.данные[айди_чата][метрика] -= 1
-        self.сохранить()
-        return self.данные[айди_чата][метрика]
-
-    def обнулить_счетчик(self, chat_id: int):
-        """Обнулиться"""
-        айди_чата = str(chat_id)
-        self.данные[айди_чата] = {}
-        self.сохранить()
+        if запись:
+            запись.is_active = False
+            await запись.save(update_fields=["is_active"])
+        return await self.получить_счетчик(chat_id, запись.bucket if запись else "")
 
 
 # Инициализируем хранилище
