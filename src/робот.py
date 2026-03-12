@@ -57,12 +57,27 @@ async def contributors(update: Update, context: ContextTypes.DEFAULT_TYPE):
     counters = (
         await Счетчик.filter(chat_id=chat_id, is_active=True, author_id__not_isnull=True)
         .annotate(total=Count("id"))
+        .group_by("author_id")
         .order_by("-total")
-        .prefetch_related("author")
+        .values("author_id", "total")
     )
 
-    контрибьюторы = "\n".join([f"{counter.author.user_mention}: {counter.total}" for counter in counters])
-    await update.message.reply_text(f"👥 Контрибьюторы:\n{контрибьюторы}")
+    if not counters:
+        await update.message.reply_text("👥 Контрибьюторов пока нет")
+        return
+
+    author_ids = [counter["author_id"] for counter in counters]
+    authors = await User.filter(id__in=author_ids)
+    authors_by_id = {author.id: author for author in authors}
+
+    контрибьюторы = "\n".join(
+        [
+            f"{authors_by_id.get(counter['author_id']).user_mention}: {counter['total']}"
+            for counter in counters
+            if counter["author_id"] in authors_by_id
+        ]
+    )
+    await update.message.reply_text(f"👥 Контрибьюторы:\n{контрибьюторы}", parse_mode="HTML")
 
 
 async def отменить_счетчик(update: Update, context: ContextTypes.DEFAULT_TYPE):
